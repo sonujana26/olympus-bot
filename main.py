@@ -16,7 +16,7 @@ from core.Cog import Cog
 from core.Olympus import Olympus
 from utils.Tools import *
 from utils.config import *
-
+from dotenv import load_dotenv
 import jishaku
 import cogs 
 
@@ -31,6 +31,7 @@ os.environ["JISHAKU_FORCE_PAGINATOR"] = "True"
 
 client = Olympus()
 tree = client.tree
+load_dotenv()
 TOKEN = os.getenv("TOKEN")
 
 
@@ -158,10 +159,21 @@ def keep_alive():
 keep_alive()
 
 
+async def load_cogs():
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py') and filename != '__init__.py':
+            try:
+                await client.load_extension(f'cogs.{filename[:-3]}')
+                print(f'Loaded {filename}')
+            except Exception as e:
+                print(f'Failed to load {filename}')
+                traceback.print_exc()
+
+
 async def main():
     async with client:
         os.system("clear")
-        #await client.load_extension("cogs")
+        await client.load_extension("cogs")
         await client.load_extension("jishaku")
         await client.start(TOKEN)
 
